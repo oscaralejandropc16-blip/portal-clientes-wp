@@ -63,20 +63,14 @@ export default function LoginPage() {
       <div className="absolute inset-0 z-0">
         <Image 
           src="/login-bg.png" 
-          alt="Background" 
-          fill 
-          priority
-          className="object-cover opacity-60 mix-blend-screen"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-3xl opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('/login-bg.png')] bg-cover bg-center opacity-[0.04]" />
       </div>
 
-      {/* Círculos difuminados decorativos */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Tarjeta Glassmorphism de Login */}
-      <div className="relative z-10 w-full max-w-md p-8 md:p-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+      {/* Tarjeta de Login */}
+      <div className="w-full max-w-md bg-[#1a1a24]/90 border border-white/5 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl relative z-10 overflow-hidden">
         
         {/* Efecto de brillo superior */}
         <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />

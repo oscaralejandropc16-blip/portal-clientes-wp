@@ -135,7 +135,19 @@ export default function DashboardPage() {
     }
 
     const fetchInitialData = async () => {
-      setIsLoading(true);
+      // 1. Carga Optimista Instantánea (Caché local)
+      const cachedData = localStorage.getItem("portal_cached_data");
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (parsed.documents) setDocuments(parsed.documents.filter((d: any) => !d.title.rendered.includes("__DELETED__")));
+          if (parsed.companies) setCompanies(parsed.companies.filter((c: any) => !c.name.includes("__DELETED__")));
+          setIsLoading(false); // Quitar loader si hay caché para carga instantánea
+        } catch(e) {}
+      } else {
+        setIsLoading(true);
+      }
+      
       setError(null);
       
       try {
@@ -149,23 +161,27 @@ export default function DashboardPage() {
         };
 
         const [expRes, empRes] = await Promise.all([
-          fetch("https://romanydelgado.com/wp-json/wp/v2/expedientes", { method: "GET", headers }),
+          fetch("https://romanydelgado.com/wp-json/wp/v2/expedientes?per_page=100", { method: "GET", headers }),
           fetch("https://romanydelgado.com/wp-json/wp/v2/empresa?per_page=100", { method: "GET", headers })
         ]);
 
         if (!expRes.ok) throw new Error("No se pudieron cargar los expedientes.");
         const expData: Expediente[] = await expRes.json();
         
-        // Filtramos internamente los expedientes marcados como borrados
-        setDocuments(expData.filter(d => !d.title.rendered.includes("__DELETED__")));
-
+        let empData: Empresa[] = [];
         if (empRes.ok) {
-          const empData: Empresa[] = await empRes.json();
-          // Filtramos internamente las empresas marcadas como borradas
-          setCompanies(empData.filter(c => !c.name.includes("__DELETED__")));
+          empData = await empRes.json();
         }
+
+        // Actualizamos estado en segundo plano
+        setDocuments(expData.filter(d => !d.title.rendered.includes("__DELETED__")));
+        setCompanies(empData.filter(c => !c.name.includes("__DELETED__")));
+
+        // Guardamos caché fresco para la próxima visita
+        localStorage.setItem("portal_cached_data", JSON.stringify({ documents: expData, companies: empData }));
+
       } catch (err: any) {
-        setError(err.message || "Ocurrió un error inesperado al conectar con el servidor.");
+        if (!cachedData) setError(err.message || "Ocurrió un error inesperado al conectar con el servidor.");
       } finally {
         setIsLoading(false);
       }
@@ -466,16 +482,16 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-blue-500/30 relative overflow-hidden">
       
-      {/* --- Ambient Background Premium --- */}
+      {/* --- Ambient Background Premium (Optimizado) --- */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[140px] mix-blend-screen" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[140px] mix-blend-screen" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-3xl opacity-50" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-3xl opacity-50" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('/login-bg.png')] bg-cover bg-center opacity-[0.04]" />
       </div>
 
       {/* --- Navbar Flotante --- */}
       <nav className="relative z-10 pt-6 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto bg-white/[0.02] border border-white/5 backdrop-blur-3xl rounded-full px-4 py-3 flex items-center justify-between shadow-2xl">
+        <div className="max-w-5xl mx-auto bg-[#1a1a24]/80 border border-white/5 rounded-full px-4 py-3 flex items-center justify-between shadow-2xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
               <FolderLock className="w-5 h-5 text-white" />
@@ -522,7 +538,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-in slide-in-from-bottom-6 duration-700 delay-150">
             <button 
               onClick={() => setIsCompanyModalOpen(true)}
-              className="group relative overflow-hidden bg-white/[0.01] border border-white/5 hover:border-indigo-500/30 rounded-3xl p-6 text-left transition-all hover:bg-white/[0.03] shadow-2xl hover:shadow-indigo-500/10 backdrop-blur-md"
+              className="group relative overflow-hidden bg-[#1a1a24] border border-white/5 hover:border-indigo-500/30 rounded-3xl p-6 text-left transition-all hover:bg-[#20202c] shadow-xl"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-indigo-500/20 transition-colors" />
               <div className="relative z-10">
@@ -536,7 +552,7 @@ export default function DashboardPage() {
 
             <button 
               onClick={() => setIsDocModalOpen(true)}
-              className="group relative overflow-hidden bg-white/[0.01] border border-white/5 hover:border-orange-500/30 rounded-3xl p-6 text-left transition-all hover:bg-white/[0.03] shadow-2xl hover:shadow-orange-500/10 backdrop-blur-md"
+              className="group relative overflow-hidden bg-[#1a1a24] border border-white/5 hover:border-orange-500/30 rounded-3xl p-6 text-left transition-all hover:bg-[#20202c] shadow-xl"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-orange-500/20 transition-colors" />
               <div className="relative z-10">
@@ -559,10 +575,10 @@ export default function DashboardPage() {
               
               <button
                 onClick={() => setSelectedCompanyId(null)}
-                className={`snap-start shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 border backdrop-blur-md ${
+                className={`snap-start shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 border ${
                   selectedCompanyId === null 
-                    ? "bg-white text-zinc-900 border-white shadow-[0_0_20px_-5px_rgba(255,255,255,0.4)]" 
-                    : "bg-white/[0.02] text-zinc-400 border-white/5 hover:bg-white/[0.06]"
+                    ? "bg-white text-zinc-900 border-white shadow-[0_0_15px_-5px_rgba(255,255,255,0.4)]" 
+                    : "bg-[#1a1a24] text-zinc-400 border-white/5 hover:bg-[#20202c]"
                 }`}
               >
                 Todos los Archivos
@@ -572,10 +588,10 @@ export default function DashboardPage() {
                 <button
                   key={emp.id}
                   onClick={() => setSelectedCompanyId(emp.id)}
-                  className={`snap-start shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 border flex items-center gap-2 backdrop-blur-md ${
+                  className={`snap-start shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 border flex items-center gap-2 ${
                     selectedCompanyId === emp.id 
-                      ? "bg-indigo-500 text-white border-indigo-400 shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)]" 
-                      : "bg-white/[0.02] text-zinc-400 border-white/5 hover:bg-white/[0.06]"
+                      ? "bg-indigo-500 text-white border-indigo-400 shadow-[0_0_15px_-5px_rgba(99,102,241,0.5)]" 
+                      : "bg-[#1a1a24] text-zinc-400 border-white/5 hover:bg-[#20202c]"
                   }`}
                 >
                   <User className="w-4 h-4 opacity-80" />
@@ -613,7 +629,7 @@ export default function DashboardPage() {
                       const emp = companies.find(c => c.id === selectedCompanyId);
                       if (emp) { setCompanyToEdit(emp); setEditCompanyName(emp.name); setActionError(null); }
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 text-xs font-semibold backdrop-blur-md"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 text-xs font-semibold"
                     title="Renombrar Carpeta"
                   >
                     <Pencil className="w-3.5 h-3.5" />
@@ -632,7 +648,7 @@ export default function DashboardPage() {
                         }
                       }
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20 text-xs font-semibold backdrop-blur-md"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20 text-xs font-semibold"
                     title="Eliminar Carpeta"
                   >
                     <FolderMinus className="w-3.5 h-3.5" />
@@ -651,7 +667,7 @@ export default function DashboardPage() {
                 placeholder="Buscar documento o fecha..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/[0.02] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner backdrop-blur-xl"
+                className="w-full bg-[#1a1a24] border border-white/5 hover:border-white/10 focus:border-blue-500/50 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner"
               />
             </div>
           </div>
@@ -690,21 +706,21 @@ export default function DashboardPage() {
                 const downloadLink = doc.acf?.documento_pdf || null;
 
                 return (
-                  <div key={doc.id} className="group relative bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-blue-500/20 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between min-h-[220px] shadow-2xl hover:shadow-blue-500/10 backdrop-blur-md">
+                  <div key={doc.id} className="group relative bg-[#1a1a24] hover:bg-[#20202c] border border-white/5 hover:border-blue-500/20 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between min-h-[220px] shadow-xl">
                     
                     {/* Botones de Acción Rápida (Edición/Eliminación) - Visibles en móvil, Hover en Desktop */}
                     {isAdmin && (
                       <div className="absolute top-4 right-4 flex items-center gap-2 z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => { setDocToEdit(doc); setEditDocTitle(doc.title.rendered); setActionError(null); }}
-                          className="p-1.5 bg-zinc-800/80 hover:bg-blue-500/20 text-zinc-400 hover:text-blue-400 rounded-lg transition-colors border border-white/5 shadow-md backdrop-blur-md"
+                          className="p-1.5 bg-[#0a0a0d] hover:bg-blue-500/20 text-zinc-400 hover:text-blue-400 rounded-lg transition-colors border border-white/5 shadow-md"
                           title="Editar Título"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => { setDocToDelete(doc); setActionError(null); }}
-                          className="p-1.5 bg-zinc-800/80 hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg transition-colors border border-white/5 shadow-md backdrop-blur-md"
+                          className="p-1.5 bg-[#0a0a0d] hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg transition-colors border border-white/5 shadow-md"
                           title="Eliminar Expediente"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -760,7 +776,7 @@ export default function DashboardPage() {
       {/* 1. Modal: Crear Empresa */}
       {isCompanyModalOpen && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isCreatingCompany && (setIsCompanyModalOpen(false), setCompanyError(null), setCompanySuccess(null), setNewCompanyName(""))}
         >
           <div 
@@ -802,7 +818,7 @@ export default function DashboardPage() {
       {/* 2. Modal: Subir Documento (Rediseñado con Custom Dropdown) */}
       {isDocModalOpen && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isUploadingDoc && (setIsDocModalOpen(false), setDocError(null), setDocSuccess(null), setDocTitle(""), setDocCompany(""), setDocFile(null), setIsDropdownOpen(false))}
         >
           <div 
@@ -894,7 +910,7 @@ export default function DashboardPage() {
       {/* 3. Modal: Editar Cliente */}
       {companyToEdit && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isProcessing && clearActionState()}
         >
           <div 
@@ -931,7 +947,7 @@ export default function DashboardPage() {
       {/* 4. Modal: Eliminar Cliente */}
       {companyToDelete && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isProcessing && clearActionState()}
         >
           <div 
@@ -974,7 +990,7 @@ export default function DashboardPage() {
       {/* 5. Modal: Editar Documento */}
       {docToEdit && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isProcessing && clearActionState()}
         >
           <div 
@@ -1011,7 +1027,7 @@ export default function DashboardPage() {
       {/* 6. Modal: Eliminar Documento */}
       {docToDelete && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => !isProcessing && clearActionState()}
         >
           <div 
@@ -1054,7 +1070,7 @@ export default function DashboardPage() {
       {/* 7. Modal de Bloqueo de Seguridad Premium */}
       {blockAlert && (
         <div 
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 p-4 animate-in fade-in duration-300"
           onClick={() => setBlockAlert(null)}
         >
           <div 
@@ -1089,7 +1105,7 @@ export default function DashboardPage() {
 
       {/* 8. Slide-over Modal: Historial de Actividad */}
       {isHistoryOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex justify-end bg-black/80 animate-in fade-in duration-300">
           <div className="absolute inset-0 cursor-pointer" onClick={() => setIsHistoryOpen(false)}></div>
           
           <div className="relative w-full max-w-sm h-full bg-[#0a0a0d] border-l border-white/10 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
