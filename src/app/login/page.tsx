@@ -59,10 +59,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-zinc-950 relative overflow-hidden">
-      {/* Fondo de Pantalla / Ambient */}
-      <div className="absolute inset-0 z-0">
-        <Image 
-          src="/login-bg.png" 
+      {/* Fondo de Pantalla / Ambient Optimizados */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-3xl opacity-50" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-3xl opacity-50" />

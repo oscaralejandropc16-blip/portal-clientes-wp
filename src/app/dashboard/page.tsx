@@ -60,6 +60,9 @@ export default function DashboardPage() {
   const [companyToEdit, setCompanyToEdit] = useState<Empresa | null>(null);
   const [companyToDelete, setCompanyToDelete] = useState<Empresa | null>(null);
 
+  // Estado de Descarga
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+
   // Estados Formularios
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
@@ -478,6 +481,38 @@ export default function DashboardPage() {
     }
   };
 
+  // --- LÓGICA: DESCARGAR DOCUMENTO (RESOLVER IDs ACF) ---
+  const handleDownload = async (documentoPdfValue: any) => {
+    // Si ya es una URL completa, abrirla directamente
+    if (typeof documentoPdfValue === 'string' && documentoPdfValue.startsWith('http')) {
+      window.open(documentoPdfValue, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    // Si es un ID numérico (ej. 7316), necesitamos buscar su URL real en WordPress
+    const mediaId = parseInt(documentoPdfValue, 10);
+    if (isNaN(mediaId)) {
+      setBlockAlert("El enlace del archivo no es válido o está corrupto.");
+      return;
+    }
+
+    setDownloadingId(mediaId);
+    try {
+      const response = await fetch(`https://romanydelgado.com/wp-json/wp/v2/media/${mediaId}`);
+      if (!response.ok) throw new Error("No se pudo localizar el archivo físico.");
+      
+      const data = await response.json();
+      if (data.source_url) {
+        window.open(data.source_url, '_blank', 'noopener,noreferrer');
+      } else {
+        throw new Error("El servidor no devolvió una ruta válida para este archivo.");
+      }
+    } catch (err: any) {
+      setBlockAlert(err.message || "Error al intentar descargar el archivo.");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-blue-500/30 relative overflow-hidden">
@@ -746,15 +781,18 @@ export default function DashboardPage() {
 
                     <div className="relative z-10 mt-auto">
                       {downloadLink ? (
-                        <a 
-                          href={downloadLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="w-full flex items-center justify-between px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-xl text-blue-400 font-semibold text-sm transition-colors group/btn shadow-inner"
+                        <button 
+                          onClick={() => handleDownload(downloadLink)}
+                          disabled={downloadingId === parseInt(downloadLink as string, 10)}
+                          className="w-full flex items-center justify-between px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-xl text-blue-400 font-semibold text-sm transition-colors group/btn shadow-inner disabled:opacity-50"
                         >
-                          Descargar Archivo
-                          <Download className="w-4 h-4 group-hover/btn:-translate-y-0.5 transition-transform" />
-                        </a>
+                          {downloadingId === parseInt(downloadLink as string, 10) ? 'Obteniendo archivo...' : 'Descargar Archivo'}
+                          {downloadingId === parseInt(downloadLink as string, 10) ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Download className="w-4 h-4 group-hover/btn:-translate-y-0.5 transition-transform" />
+                          )}
+                        </button>
                       ) : (
                         <div className="w-full flex items-center justify-center px-4 py-3 bg-white/5 rounded-xl text-zinc-500 font-semibold text-sm border border-transparent">
                           No disponible
