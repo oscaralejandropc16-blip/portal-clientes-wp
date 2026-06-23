@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { 
   LogOut, FileText, Download, Calendar, Loader2, AlertCircle,
   Building2, UploadCloud, X, CheckCircle2, FolderLock, Search,
-  Edit2, Trash2, ChevronDown, User, History, Clock
+  Edit2, Trash2, ChevronDown, User, History, Clock, FolderMinus, Pencil
 } from "lucide-react";
 
 // Interfaces
@@ -605,16 +605,17 @@ export default function DashboardPage() {
               
               {/* Controles CRUD para la Empresa Seleccionada */}
               {isAdmin && selectedCompanyId && (
-                <div className="flex items-center gap-2 ml-2">
+                <div className="flex items-center gap-2 ml-4">
                   <button 
                     onClick={() => {
                       const emp = companies.find(c => c.id === selectedCompanyId);
                       if (emp) { setCompanyToEdit(emp); setEditCompanyName(emp.name); setActionError(null); }
                     }}
-                    className="p-2 bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-400 hover:text-blue-400 rounded-lg transition-colors border border-white/5 shadow-inner backdrop-blur-md"
-                    title="Editar Nombre de Carpeta"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 text-xs font-semibold backdrop-blur-md"
+                    title="Renombrar Carpeta"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    <Pencil className="w-3.5 h-3.5" />
+                    Renombrar
                   </button>
                   <button 
                     onClick={() => {
@@ -629,10 +630,11 @@ export default function DashboardPage() {
                         }
                       }
                     }}
-                    className="p-2 bg-zinc-800/50 hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg transition-colors border border-white/5 shadow-inner backdrop-blur-md"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20 text-xs font-semibold backdrop-blur-md"
                     title="Eliminar Carpeta"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <FolderMinus className="w-3.5 h-3.5" />
+                    Eliminar Carpeta
                   </button>
                 </div>
               )}
