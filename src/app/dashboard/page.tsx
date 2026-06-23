@@ -589,23 +589,25 @@ export default function DashboardPage() {
         {/* --- Lista de Documentos (Grid Pro Max) --- */}
         <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-700 delay-300">
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                {selectedCompanyId ? (
-                  <>
-                    <User className="w-6 h-6 text-indigo-400" />
-                    <span dangerouslySetInnerHTML={{ __html: companies.find(c => c.id === selectedCompanyId)?.name || "" }} />
-                  </>
-                ) : "Archivos Recientes"}
-              </h2>
-              <span className="px-3 py-1 bg-white/5 text-zinc-400 text-xs font-semibold rounded-full border border-white/10">
-                {filteredDocuments.length}
-              </span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 w-full md:w-auto">
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  {selectedCompanyId ? (
+                    <>
+                      <User className="w-6 h-6 text-indigo-400 shrink-0" />
+                      <span className="truncate max-w-[200px] sm:max-w-xs" dangerouslySetInnerHTML={{ __html: companies.find(c => c.id === selectedCompanyId)?.name || "" }} />
+                    </>
+                  ) : "Archivos Recientes"}
+                </h2>
+                <span className="px-3 py-1 bg-white/5 text-zinc-400 text-xs font-semibold rounded-full border border-white/10 shrink-0">
+                  {filteredDocuments.length}
+                </span>
+              </div>
               
               {/* Controles CRUD para la Empresa Seleccionada */}
               {isAdmin && selectedCompanyId && (
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4 mt-2 sm:mt-0">
                   <button 
                     onClick={() => {
                       const emp = companies.find(c => c.id === selectedCompanyId);
@@ -690,9 +692,9 @@ export default function DashboardPage() {
                 return (
                   <div key={doc.id} className="group relative bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-blue-500/20 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between min-h-[220px] shadow-2xl hover:shadow-blue-500/10 backdrop-blur-md">
                     
-                    {/* Botones de Acción Rápida (Edición/Eliminación) */}
+                    {/* Botones de Acción Rápida (Edición/Eliminación) - Visibles en móvil, Hover en Desktop */}
                     {isAdmin && (
-                      <div className="absolute top-4 right-4 flex items-center gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-4 right-4 flex items-center gap-2 z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => { setDocToEdit(doc); setEditDocTitle(doc.title.rendered); setActionError(null); }}
                           className="p-1.5 bg-zinc-800/80 hover:bg-blue-500/20 text-zinc-400 hover:text-blue-400 rounded-lg transition-colors border border-white/5 shadow-md backdrop-blur-md"
@@ -804,7 +806,7 @@ export default function DashboardPage() {
           onClick={() => !isUploadingDoc && (setIsDocModalOpen(false), setDocError(null), setDocSuccess(null), setDocTitle(""), setDocCompany(""), setDocFile(null), setIsDropdownOpen(false))}
         >
           <div 
-            className="bg-[#0f0f13] border border-white/10 rounded-[2rem] p-8 md:p-10 w-full max-w-md shadow-[0_0_50px_-12px_rgba(0,0,0,1)] relative animate-in zoom-in-95 duration-300 overflow-visible cursor-default"
+            className="bg-[#0f0f13] border border-white/10 rounded-[2rem] p-6 md:p-10 w-full max-w-md shadow-[0_0_50px_-12px_rgba(0,0,0,1)] relative animate-in zoom-in-95 duration-300 overflow-visible cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] pointer-events-none" />
@@ -1056,7 +1058,7 @@ export default function DashboardPage() {
           onClick={() => setBlockAlert(null)}
         >
           <div 
-            className="bg-[#0f0f13] border border-amber-500/20 rounded-[2rem] p-8 md:p-10 w-full max-w-md shadow-[0_0_50px_-12px_rgba(245,158,11,0.2)] relative animate-in zoom-in-95 duration-300 text-center overflow-hidden cursor-default"
+            className="bg-[#0f0f13] border border-amber-500/20 rounded-[2rem] p-6 md:p-10 w-full max-w-md shadow-[0_0_50px_-12px_rgba(245,158,11,0.2)] relative animate-in zoom-in-95 duration-300 text-center overflow-hidden cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[80px] pointer-events-none" />
