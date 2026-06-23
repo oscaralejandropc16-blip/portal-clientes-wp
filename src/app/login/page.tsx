@@ -82,8 +82,8 @@ export default function LoginPage() {
         <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">Portal Clientes</h1>
-          <p className="text-zinc-400 text-sm">Inicia sesión con tus credenciales</p>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">Intranet Legal</h1>
+          <p className="text-sm text-zinc-400 font-medium leading-relaxed">Acceso exclusivo para el equipo legal. Gestiona e intercambia expedientes de forma segura.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">

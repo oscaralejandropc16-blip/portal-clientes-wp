@@ -480,7 +480,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
               <FolderLock className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg text-white tracking-tight">PortalDocs</span>
+            <span className="font-bold text-lg text-white tracking-tight">Intranet Legal</span>
           </div>
           
           <div className="flex items-center gap-2">
@@ -513,7 +513,7 @@ export default function DashboardPage() {
             Bienvenido, {userName}
           </h1>
           <p className="text-lg text-zinc-400/80 max-w-2xl mx-auto sm:mx-0">
-            Gestiona tus expedientes y documentación de clientes de forma centralizada y segura.
+            Intercambia expedientes y documentación de casos con el equipo de forma centralizada y segura.
           </p>
         </div>
 
@@ -529,8 +529,8 @@ export default function DashboardPage() {
                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-5 text-indigo-400 group-hover:scale-110 transition-transform shadow-inner">
                   <User className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-1">Registrar Cliente</h3>
-                <p className="text-sm text-zinc-400">Añade nuevas empresas o personas a tu red.</p>
+                <h3 className="text-xl font-bold text-white mb-1">Nueva Carpeta</h3>
+                <p className="text-sm text-zinc-400">Crea un espacio para un nuevo caso o cliente.</p>
               </div>
             </button>
 
@@ -553,7 +553,7 @@ export default function DashboardPage() {
         {/* --- Filtro por Empresas (Carpetas) --- */}
         {companies.length > 0 && (
           <div className="animate-in slide-in-from-bottom-7 duration-700 delay-200">
-            <h2 className="text-xl font-bold text-white mb-4 px-2">Carpetas de Clientes</h2>
+            <h2 className="text-xl font-bold text-white mb-4 px-2">Directorio de Casos y Clientes</h2>
             <div className="flex gap-3 overflow-x-auto pb-4 px-2 snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
               
@@ -612,7 +612,7 @@ export default function DashboardPage() {
                       if (emp) { setCompanyToEdit(emp); setEditCompanyName(emp.name); setActionError(null); }
                     }}
                     className="p-2 bg-zinc-800/50 hover:bg-blue-500/20 text-zinc-400 hover:text-blue-400 rounded-lg transition-colors border border-white/5 shadow-inner backdrop-blur-md"
-                    title="Editar Nombre de Cliente"
+                    title="Editar Nombre de Carpeta"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -622,7 +622,7 @@ export default function DashboardPage() {
                       if (emp) {
                         const hasDocs = documents.some(doc => doc.empresa && doc.empresa.includes(emp.id));
                         if (hasDocs) {
-                          setBlockAlert("No puedes eliminar este cliente porque aún tiene expedientes asignados. Debes eliminar o reasignar los expedientes primero.");
+                          setBlockAlert("No puedes eliminar esta carpeta porque aún tiene expedientes asignados. Debes eliminar o reasignar los expedientes primero.");
                         } else {
                           setCompanyToDelete(emp);
                           setActionError(null);
@@ -630,7 +630,7 @@ export default function DashboardPage() {
                       }
                     }}
                     className="p-2 bg-zinc-800/50 hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg transition-colors border border-white/5 shadow-inner backdrop-blur-md"
-                    title="Eliminar Cliente"
+                    title="Eliminar Carpeta"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -775,7 +775,7 @@ export default function DashboardPage() {
             
             <h3 className="text-2xl font-extrabold text-white mb-8 flex items-center gap-3 relative z-10">
               <div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400"><User className="w-6 h-6" /></div>
-              Registrar Cliente
+              Crear Nueva Carpeta
             </h3>
 
             {companyError && <div className="mb-6 flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10"><AlertCircle className="w-5 h-5 text-red-400 shrink-0" /><p className="text-sm text-red-200">{companyError}</p></div>}
@@ -783,8 +783,8 @@ export default function DashboardPage() {
             
             <form onSubmit={handleCreateCompany} className="space-y-6 relative z-10">
               <div>
-                <label className="block text-sm font-semibold text-zinc-400 mb-2">Nombre (Empresa o Persona)</label>
-                <input type="text" required value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} disabled={isCreatingCompany} placeholder="Ej. Sol Cargo o Pedro Pérez" className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 shadow-inner" />
+                <label className="block text-sm font-semibold text-zinc-400 mb-2">Nombre (Caso o Cliente)</label>
+                <input type="text" required value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} disabled={isCreatingCompany} placeholder="Ej. Demanda Sol Cargo o Pedro Pérez" className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 shadow-inner" />
               </div>
               <button type="submit" disabled={isCreatingCompany} className="w-full flex justify-center items-center gap-2 mt-2 py-4 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-[0_0_30px_-5px_rgba(79,70,229,0.4)] disabled:opacity-50">
                 {isCreatingCompany ? <Loader2 className="w-5 h-5 animate-spin" /> : <User className="w-5 h-5" />}
@@ -830,14 +830,14 @@ export default function DashboardPage() {
               </div>
               
               <div className="relative">
-                <label className="block text-sm font-semibold text-zinc-400 mb-2">Cliente Asignado</label>
+                <label className="block text-sm font-semibold text-zinc-400 mb-2">Carpeta / Cliente Asignado</label>
                 {/* Custom Select Premium */}
                 <div 
                   onClick={() => !isUploadingDoc && setIsDropdownOpen(!isDropdownOpen)}
                   className={`w-full bg-black/40 border ${isDropdownOpen ? 'border-orange-500/50 ring-2 ring-orange-500/20' : 'border-white/10 hover:border-white/20'} rounded-2xl px-5 py-4 text-white transition-all shadow-inner flex justify-between items-center cursor-pointer ${isUploadingDoc ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span className={docCompany ? "text-white font-medium" : "text-zinc-500"}>
-                    {docCompany ? companies.find(c => c.id.toString() === docCompany)?.name : "Selecciona a quién pertenece..."}
+                    {docCompany ? companies.find(c => c.id.toString() === docCompany)?.name : "Selecciona a qué caso pertenece..."}
                   </span>
                   <ChevronDown className={`w-5 h-5 text-zinc-500 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180 text-orange-400' : ''}`} />
                 </div>
@@ -907,7 +907,7 @@ export default function DashboardPage() {
               <X className="w-5 h-5 pointer-events-none" />
             </button>
             
-            <h3 className="text-2xl font-extrabold text-white mb-8 flex items-center gap-3 relative z-10"><div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400"><Edit2 className="w-6 h-6" /></div>Editar Cliente</h3>
+            <h3 className="text-2xl font-extrabold text-white mb-8 flex items-center gap-3 relative z-10"><div className="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400"><Edit2 className="w-6 h-6" /></div>Editar Nombre de Carpeta</h3>
             
             {actionError && <div className="mb-6 flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10"><AlertCircle className="w-5 h-5 text-red-400 shrink-0" /><p className="text-sm text-red-200">{actionError}</p></div>}
             
@@ -948,12 +948,12 @@ export default function DashboardPage() {
                <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 shadow-inner">
                  <AlertCircle className="w-10 h-10" />
                </div>
-               <h3 className="text-2xl font-extrabold text-white mb-3">Eliminar Cliente</h3>
+               <h3 className="text-2xl font-extrabold text-white mb-3">Eliminar Carpeta</h3>
                
                {actionError && <div className="mb-6 flex items-start text-left gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10"><AlertCircle className="w-5 h-5 text-red-400 shrink-0" /><p className="text-sm text-red-200">{actionError}</p></div>}
                
                <p className="text-zinc-400 text-base mb-8">
-                 ¿Estás seguro de que deseas eliminar permanentemente el cliente <b className="text-white" dangerouslySetInnerHTML={{ __html: companyToDelete.name }} />? Esta acción no se puede deshacer.
+                 ¿Estás seguro de que deseas eliminar permanentemente esta carpeta: <b className="text-white" dangerouslySetInnerHTML={{ __html: companyToDelete.name }} />? Esta acción no se puede deshacer.
                </p>
                <div className="flex gap-4">
                  <button onClick={() => clearActionState()} disabled={isProcessing} className="flex-1 py-4 px-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-2xl transition-all disabled:opacity-50">Cancelar</button>
