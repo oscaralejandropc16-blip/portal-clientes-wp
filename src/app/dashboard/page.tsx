@@ -79,6 +79,7 @@ export default function DashboardPage() {
   const [docError, setDocError] = useState<string | null>(null);
   const [docSuccess, setDocSuccess] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const [editDocTitle, setEditDocTitle] = useState("");
   const [editCompanyName, setEditCompanyName] = useState("");
@@ -342,6 +343,7 @@ export default function DashboardPage() {
     }
 
     setIsUploadingDoc(true);
+    setUploadProgress(0);
     setDocError(null);
     setDocSuccess(null);
 
@@ -349,25 +351,57 @@ export default function DashboardPage() {
       const token = localStorage.getItem("wp_token");
       if (!token) throw new Error("Sesión expirada");
 
+      // Paso 1: Subir el archivo multimedia usando XMLHttpRequest para progreso (usando FormData para evitar problemas de CORS)
       const formData = new FormData();
       formData.append("file", docFile);
       formData.append("title", docTitle.trim());
 
-      const mediaResponse = await fetch("https://romanydelgado.com/wp-json/wp/v2/media", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json"
-        },
-        body: formData
+      const mediaData: any = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "https://romanydelgado.com/wp-json/wp/v2/media", true);
+        
+        xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        xhr.setRequestHeader("Accept", "application/json");
+        // Nota: NO seteamos Content-Type ni Content-Disposition manualmente para evitar que el CORS bloquee la petición.
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percentComplete);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              resolve(response);
+            } catch (e) {
+              reject(new Error("Respuesta inválida del servidor (HTML en lugar de JSON)."));
+            }
+          } else {
+            let errorMsg = `Error ${xhr.status}: Falló la subida del archivo.`;
+            if (xhr.status === 413) errorMsg = "El archivo es demasiado grande para el servidor.";
+            try {
+              const err = JSON.parse(xhr.responseText);
+              errorMsg = err.message || errorMsg;
+            } catch(e) {}
+            reject(new Error(errorMsg));
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error("Error de red al intentar subir el archivo (CORS o pérdida de conexión)."));
+        };
+
+        xhr.send(formData); // Envío usando FormData
       });
-
-      const mediaData = await mediaResponse.json();
-
-      if (!mediaResponse.ok) throw new Error(mediaData.message || "Error en el Paso 1: Falló la subida del archivo.");
 
       const uploadedMediaId = mediaData.id;
 
+      setUploadProgress(100); // Completado el paso 1
+
+      // Paso 2: Crear el expediente y vincularlo
       const expBody: any = {
         title: docTitle.trim(),
         status: "publish",
@@ -408,6 +442,7 @@ export default function DashboardPage() {
       setDocError(err.message || "Error de conexión al subir el documento.");
     } finally {
       setIsUploadingDoc(false);
+      setUploadProgress(0);
     }
   };
 
@@ -932,9 +967,18 @@ export default function DashboardPage() {
                   {!docFile && <p className="text-xs text-zinc-600 font-medium mt-2">Límite según el servidor (Solo PDF)</p>}
                 </div>
               </div>
-              <button type="submit" disabled={isUploadingDoc} className="w-full flex justify-center items-center gap-2 mt-4 py-4 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-2xl transition-all shadow-[0_0_30px_-5px_rgba(249,115,22,0.4)] disabled:opacity-50">
-                {isUploadingDoc ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
-                {isUploadingDoc ? "Procesando en WP..." : "Subir y Crear Expediente"}
+              <button type="submit" disabled={isUploadingDoc} className="w-full relative overflow-hidden flex justify-center items-center gap-2 mt-4 py-4 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-2xl transition-all shadow-[0_0_30px_-5px_rgba(249,115,22,0.4)] disabled:opacity-50">
+                {/* Progress bar background */}
+                {isUploadingDoc && (
+                  <div 
+                    className="absolute inset-y-0 left-0 bg-white/20 transition-all duration-300 ease-out" 
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                )}
+                <div className="relative z-10 flex items-center gap-2">
+                  {isUploadingDoc ? <Loader2 className="w-5 h-5 animate-spin" /> : <UploadCloud className="w-5 h-5" />}
+                  {isUploadingDoc ? `Subiendo... ${uploadProgress}%` : "Subir y Crear Expediente"}
+                </div>
               </button>
             </form>
           </div>
