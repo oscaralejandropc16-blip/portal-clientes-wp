@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Slate Background with Rounded Corners -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="500" height="500" x="6" y="6" rx="106" fill="none" stroke="url(#primaryGrad)" stroke-width="12" stroke-opacity="0.6"/>
+
+  <!-- Center Pillar -->
+  <circle cx="256" cy="116" r="18" fill="url(#accentGrad)"/>
+  <rect x="249" y="132" width="14" height="232" rx="7" fill="url(#primaryGrad)"/>
+
+  <!-- Base Pedestal -->
+  <path d="M 190 368 L 322 368 C 322 368 308 348 290 348 L 222 348 C 204 348 190 368 190 368 Z" fill="url(#accentGrad)"/>
+  <rect x="170" y="368" width="172" height="22" rx="8" fill="url(#primaryGrad)"/>
+
+  <!-- Horizontal Balance Beam -->
+  <path d="M 110 178 Q 256 162 402 178" fill="none" stroke="url(#accentGrad)" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="256" cy="170" r="12" fill="#ffffff"/>
+
+  <!-- Left Scale Pan -->
+  <line x1="110" y1="184" x2="68" y2="272" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+  <line x1="110" y1="184" x2="152" y2="272" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 58 272 Q 110 318 162 272 Z" fill="url(#primaryGrad)"/>
+
+  <!-- Right Scale Pan -->
+  <line x1="402" y1="184" x2="360" y2="272" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+  <line x1="402" y1="184" x2="444" y2="272" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 350 272 Q 402 318 454 272 Z" fill="url(#primaryGrad)"/>
+</svg>
