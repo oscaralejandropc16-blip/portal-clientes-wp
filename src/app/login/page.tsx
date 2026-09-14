@@ -72,9 +72,18 @@ export default function LoginPage() {
         {/* Efecto de brillo superior */}
         <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">Intranet Legal</h1>
-          <p className="text-sm text-zinc-400 font-medium leading-relaxed">Acceso exclusivo para el equipo legal. Gestiona e intercambia expedientes de forma segura.</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <div className="relative w-48 h-32 mb-2 drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+            <Image
+              src="/logo.png"
+              alt="Román y Delgado"
+              fill
+              priority
+              className="object-contain"
+            />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">Intranet Legal</h1>
+          <p className="text-xs sm:text-sm text-zinc-400 font-medium leading-relaxed max-w-xs">Acceso exclusivo para el equipo legal. Gestiona e intercambia expedientes de forma segura.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">

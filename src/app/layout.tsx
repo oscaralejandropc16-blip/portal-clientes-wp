@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Intranet Legal | Romany Delgado",
-    template: "%s | Intranet Legal",
+    default: "Intranet Legal | Román y Delgado",
+    template: "%s | Román y Delgado",
   },
-  description: "Portal privado y seguro de gestión de expedientes legales - Romany Delgado",
+  description: "Portal privado y seguro de gestión de expedientes legales - Román y Delgado, C.A.",
 };
 
 export default function RootLayout({

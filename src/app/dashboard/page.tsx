@@ -2,6 +2,7 @@
 
 import { useEffect, useState, FormEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   LogOut, FileText, Download, Calendar, Loader2, AlertCircle,
   Building2, UploadCloud, X, CheckCircle2, FolderLock, Search,
@@ -563,10 +564,19 @@ export default function DashboardPage() {
       <nav className="relative z-10 pt-6 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto bg-[#1a1a24]/80 border border-white/5 rounded-full px-4 py-3 flex items-center justify-between shadow-2xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <FolderLock className="w-5 h-5 text-white" />
+            <div className="relative w-10 h-10 rounded-2xl bg-white/5 border border-white/10 p-1 flex items-center justify-center overflow-hidden shadow-lg shadow-black/40">
+              <Image
+                src="/logo-emblem.png"
+                alt="Román y Delgado"
+                width={30}
+                height={30}
+                className="object-contain"
+              />
             </div>
-            <span className="font-bold text-lg text-white tracking-tight">Intranet Legal</span>
+            <div className="flex flex-col">
+              <span className="font-bold text-base sm:text-lg text-white tracking-tight leading-tight">Intranet Legal</span>
+              <span className="text-[10px] text-amber-400 font-semibold tracking-wider uppercase hidden sm:block">Román y Delgado</span>
+            </div>
           </div>
           
           <div className="flex items-center gap-2">
